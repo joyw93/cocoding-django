@@ -1,0 +1,46 @@
+{% extends 'cocoding/base.html' %}
+{% block content %}
+<div class="container my-3 w-50 ">
+    <h5 class="my-3 border-bottom pb-2 fw-bolder">회원가입</h5>
+    <form method="post" class="post-form" action="{% url 'account:signup' %}">
+        {% csrf_token %}
+        <div class="form-group mb-3">
+            <label for="username">이름</label>
+            <input required="required" type="text" class="form-control" placeholder="이름을 입력해주세요" name="username"
+                id="username" value="{{ form.username.value|default_if_none:'' }}">
+            <span style="color:red">{{ form.username.errors }}</span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="nickname">닉네임</label>
+            <input required="required" type="text" class="form-control" placeholder="2 ~ 10자 이내" name="nickname"
+                id="nickname" value="{{ form.nickname.value|default_if_none:'' }}">
+            <span style="color:red">{{ form.nickname.errors }}</span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="email">이메일</label>
+            <input required="required" type="email" class="form-control" placeholder="example@cocoding.com" name="email"
+                id="email" value="{{ form.email.value|default_if_none:'' }}">
+            <span style="color:red">{{ form.email.errors }}</span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="password1">비밀번호</label>
+            <input required="required" type="password" class="form-control" placeholder="비밀번호를 입력해주세요" name="password1"
+                id="password1" value="{{ form.password1.value|default_if_none:'' }}">
+            <span style="color:red">{{ form.password1.errors }}</span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="password2">비밀번호 확인</label>
+            <input required="required" type="password" class="form-control" placeholder="비밀번호를 한번더 입력해주세요"
+                name="password2" id="password2" value="{{ form.password2.value|default_if_none:'' }}">
+            <div style="color:red">{{ form.password2.errors }}</div>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary" type="submit">가입하기</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

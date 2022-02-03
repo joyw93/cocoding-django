@@ -1,0 +1,133 @@
+{% extends 'cocoding/base.html' %}
+{% block content %}
+
+<div class="container mt-3 w-75">
+    <div id="title">
+        <div class="fw-bolder fs-2">
+            {{post.title}}
+        </div>
+        <div class="float-end fs-6 fw-bold text-muted ">
+            {% if post.author == user %}
+            {% if post.recruiting %}
+            <a class="btn btn-primary btn-sm" href="/set_recruit/{{post.pk}}/">모집중</a>
+            {% else %}
+            <a class="btn btn-primary btn-sm" href="/set_recruit/{{post.pk}}/">모집완료</a>
+            {% endif %}
+            {% else %}
+            {% if post.recruiting %}
+            <a class="btn btn-primary btn-sm">모집중</a>
+            {% else %}
+            <a class="btn btn-primary btn-sm">모집완료</a>
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="mt-1">
+            <span class="fw-bold">{{post.author.nickname}}</span>
+            <span class="text-muted">·&nbsp;{{post.created_at|date:'Y-m-d'}}</span>
+        </div>
+        <div class="mt-2 fw-bold text-muted">
+            {% if user.is_authenticated and post.author == user %}
+            <span style="cursor:pointer;" onclick="location.href='/post_update/{{post.pk}}/'">수정</span>
+            <!-- <span style="cursor:pointer;" onclick="location.href='/post_delete/{{post.pk}}/'">삭제</span> -->
+            <span style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#postDelete">삭제</span>
+            <div class="modal fade" id="postDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="postDeleteLabel">게시물 삭제</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      게시물을 삭제하시겠습니까?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                      <a role="button" class="btn btn-primary" href="/post_delete/{{post.pk}}/">확인</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+        </div>
+        <hr/>
+        <div id="content">
+            {{post.content | safe}}
+        </div>
+        <hr />
+        <div class="bg-light" id="tag">
+            <span class="text-muted">연관태그</span>
+            {% for tag in post.tags.all %}
+            <a href="{% url 'cocoding:post_search' tag %}"><span class="badge rounded-pill bg-secondary">#{{ tag }}</span></a>
+            {% endfor %}
+        </div>
+        <hr />
+        <div id="comment">
+            <!-- Comments section-->
+            <section class="mb-5">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <!-- Single comment-->
+                        {% if post.comment_set.exists %}
+                        {% for comment in post.comment_set.iterator %}
+                        <div class="d-flex">
+                            <div class="ms-3">
+                                <div class="fw-bold mb-3">
+                                    {{comment.author.nickname}}&nbsp;&nbsp;
+                                    <small class="text-muted">{{comment.created_at | date:'Y-m-d'}}</small>
+                                </div>
+                                {{comment.content | linebreaks | safe}}
+                            </div>
+                            {% if user.is_authenticated and comment.author == user %}
+                                <div class="float-end ms-3">
+                                    <a role="button" class="btn btn-sm btn-secondary"
+                                        id="comment-{{comment.pk}}-update-btn"
+                                        href="/comment_update/{{comment.pk}}/">수정</a>
+                                    <a role="button" class="btn btn-sm btn-secondary"
+                                        id="comment-{{comment.pk}}-delete-modal-btn" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#deleteCommentModal-{{comment.pk}}">삭제</a>
+                                </div>
+                                <div class="modal fade" id="deleteCommentModal-{{comment.pk}}" role="dialog"
+                                    tabindex="-1" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel">댓글 삭제</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                댓글을 삭제하시겠습니까?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">취소</button>
+                                                <a role="button" class="btn btn-primary"
+                                                    href="/comment_delete/{{comment.pk}}/">확인</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                        </div>
+                        <hr />
+                        {% endfor %}
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                        <!-- Comment form-->
+                        {% include 'cocoding/comment_form.html' %}
+                        {% else %}
+                        <div class="d-grid gap-2">
+                            <a role="button" class="mb-4 btn btn-outline-secondary btn-block btn-sm"
+                                href="{% url 'account:signin' %}">
+                                로그인 후 댓글 작성하기</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+
+    {% endblock %}

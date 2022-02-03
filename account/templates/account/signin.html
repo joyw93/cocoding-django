@@ -1,0 +1,35 @@
+{% extends 'cocoding/base.html' %}
+{% block content %}
+<div class="my-5 text-center container w-50">
+    <div class="form-signin">
+        <h2 class="fw-bold mb-5">
+            로그인
+        </h2>
+
+        <form method="post" class="post-form" action="{% url 'account:signin' %}">
+            {% csrf_token %}
+            <div class="form-floating">
+                <input required="required" type="email" class="form-control mb-3" name="email" id="email"
+                    placeholder="name@example.com" value="{{ form.email.value|default_if_none:'' }}">
+                <label for="email">이메일</label>
+            </div>
+            <div class="form-floating">
+                <input required="required" type="password" class="form-control mb-3" name="password" id="password"
+                    placeholder="Password" value="{{ form.password.value|default_if_none:'' }}">
+                <label for="password">비밀번호</label>
+            </div>
+            <div class="d-grid gap-3">
+                <button class="w-100 btn btn-lg btn-primary" type="submit">로그인 하기</button>
+            </div>
+        </form>
+
+        <h6 class="text-muted mt-4">아직 계정이 없으신가요? &nbsp;<span style="cursor:pointer;" onclick="location.href='/account/signup/'" class="text-dark fw-bolder">계정 만들기</span></h6>
+    </div>
+</div>
+<script>
+    var err = "{{login_error_msg}}"
+    if (err) {
+        alert(err);
+    }
+</script>
+{% endblock %}

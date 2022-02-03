@@ -3,9 +3,6 @@
 
 <head>
   <meta name="description" content="">
-  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-  <meta name="generator" content="Hugo 0.88.1">
-  <title>Album example · Bootstrap v5.1</title>
   <!-- Bootstrap core CSS -->
   <style>
     .bd-placeholder-img {
@@ -26,32 +23,107 @@
 
 <body>
   <main>
-    <section class="py-5 text-center container">
-      <div class="row py-lg-5">
+    <section class="text-center bg-dark text-white mb-5" style="height: 250px;">
+      <div class="row py-5">
         <div class="col-lg-6 col-md-8 mx-auto">
-          <h1 class="fw-light">스터디와 사이드 프로젝트를 찾는 가장 쉬운 방법</h1>
-          <p class="lead text-muted">COCODING과 함께하세요.</p>
-          <p>
-            <a href="#" class="btn btn-primary my-2">Main call to action</a>
-            <a href="#" class="btn btn-secondary my-2">Secondary action</a>
-          </p>
+          <h1 class="fw-light">함께 성장할 스터디를 모집해보세요</h1>
+          <p class="lead text-muted">코딩메이트를 구하는 가장 쉬운방법!</p>
         </div>
       </div>
     </section>
-    {% if post_list %}
-          {% for post in post_list %}
-          <div class="card border-primary mb-3 ms-3 me-3">
+
+
+    <div class="container">
+      <hr class="mx-3 mb-4" />
+      <div class="row mx-2 g-3 mb-4">
+        <div class="col-5">
+          <input aria-describedby="button-search" type="text" class="form-control mb-2" id="search-input"
+            placeholder="관심 스터디를 검색해보세요!">
+        </div>
+        <div class="col-3">
+          <button id="button-search" type="button" class="btn btn-primary mb-2" onclick="searchPost();">검색</button>
+        </div>
+      </div>
+      {% if post_list %}
+      <div class="row row-cols-1 row-cols-md-1 g-3 mx-2">
+        {% for post in post_list %}
+        <div class="col">
+          <div class="card border-primary">
             <div class="card-header">
-              Featured
+              {% if post.recruiting %}
+              <span class="badge bg-primary">모집중</span>
+              {% else %}
+              <span class="badge bg-secondary">모집완료</span>
+              {% endif %}
+              <div class="float-end">
+                {% if post.tags %}
+                {% for tag in post.tags.all %}
+                <a href="{% url 'cocoding:post_search' tag %}"><span class="badge bg-secondary">#{{ tag }}</span></a>
+                {% endfor %}
+                {% endif %}
+              </div>
             </div>
-            <div class="card-body">
-              <h5 class="card-title">{{post.title}}</h5>
-              <p class="card-text">{{post.content}}</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
+            <a href="{{post.get_absolute_url}}" class="card-body text-dark" style="text-decoration:none">
+              <h4 class="card-title fw-bold">{{post.title | truncatechars:25}}</h4>
+              <h6 class="text-muted mt-3">{{post.author.nickname}}&nbsp;·&nbsp;{{post.created_at |date:'Y-m-d'}}
+                <span class="float-end"><i
+                    class="far fa-comment-dots"></i>&nbsp;<span>{{post.comment_set.count}}</span></span>
+              </h6>
+            </a>
           </div>
-          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
       {% endif %}
+    </div>
   </main>
 </body>
+
+
+<nav aria-label="Pagination">
+  <ul class="pagination justify-content-center my-5">
+    {% if page_obj.has_previous %}
+
+    <li class="page-item">
+      <a class="page-link" href="?page={{page_obj.previous_page_number}}">이전</a>
+    </li>
+
+    {% endif %}
+    {% for page in paginator.page_range %}
+    {% if page_obj.number == page %}
+    <li class="page-item active"><a class="page-link" href="?page={{page}}">{{page}}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{page}}">{{page}}</a></li>
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{page_obj.next_page_number}}">다음</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+<hr />
+
+<script>
+  function searchPost() {
+    let searchValue = document.getElementById('search-input').value.trim();
+    if (searchValue.length > 1) {
+      location.href = "/search/" + searchValue + "/";
+    }
+    else {
+      alert('검색어(' + searchValue + ')가 너무 짧습니다.');
+    }
+  };
+
+  document.getElementById('search-input').addEventListener('keyup', function (event) {
+    if (event.key === 'Enter') {
+      searchPost();
+    }
+  });
+</script>
+
+
+
+
 {% endblock %}

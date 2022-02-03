@@ -1,0 +1,11 @@
+<div class="container my-3">
+    <h5 class="my-3 border-bottom pb-2 fw-bolder">댓글 작성</h5>
+    <form method="post" class="post-form" action="{{post.get_absolute_url}}new_comment/">
+        {% csrf_token %}
+        <div class="form-group mb-3">
+            <textarea required="required" name="content" class="form-control" id="content" rows="10" value="{{ form.content.value|default_if_none:'' }}"></textarea>
+            <span style="color:red">{{ form.content.errors }}</span>
+        </div>
+        <button type="submit" class="btn btn-primary">댓글 등록</button>
+    </form>
+</div>
